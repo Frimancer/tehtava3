@@ -1,5 +1,6 @@
 const express = require('express')
 const app = express()
+var cors = require('cors');
 var bodyParser = require("body-parser");
 var morgan = require('morgan')
 app.use(morgan('tiny'))
@@ -12,16 +13,14 @@ morgan(function (tokens, req, res) {
     tokens.res(req, res, 'content-length'), '-',
     tokens['response-time'](req, res), 'ms'
   ].join(' ')
-})
+});
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.json())
-
-var cors = require('cors');
-
-// use it before all route definitions
-app.use(cors({origin: 'http://localhost:3000'}));
+app.use(cors())
+app.use(express.static('build'))
 
 let persons = [
   {
@@ -84,10 +83,10 @@ app.delete('/api/persons/:id', (request, response) => {
   response.status(204).end()
 })
 
+
+// add person
 app.post('/api/persons', (request, response) => {
-  console.log("------request------");
   const id = rand = Math.floor(Math.random() * 9999);
-  console.log(request.body);
   const person = request.body
   person.id = id + 1;
 
